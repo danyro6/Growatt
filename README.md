@@ -19,11 +19,46 @@ Obiectivul lucrării este descrierea unei implementări locale cu funcții separ
 
 ## 2. Fundament teoretic
 
-Protecția diferențială detectează curentul rezidual rezultat din dezechilibrul curenților care traversează conductoarele active monitorizate. Într-o sursă flotantă, primul defect față de pământ poate produce un curent insuficient pentru declanșarea anticipată într-o instalație cu sursă referențiată.
+### 2.1. Principiul protecției diferențiale
 
-În schemele care prevăd această măsură, legătura N–PE la sursă contribuie la stabilirea traseului curentului de defect prin conductorul de protecție. Poziția legăturii față de dispozitivele diferențiale și coordonarea sa cu sursele alternative sunt esențiale. Continuitatea PE și alegerea protecțiilor rămân necesare independent de comanda acestei legături. Referința [1] prezintă principiul pentru invertoare și invertoare/încărcătoare; aplicabilitatea la modelul Growatt utilizat necesită verificarea documentației sale specifice.
+Într-un circuit monofazat, diferențiala monitorizează faza și nulul. În regim normal, curentul care pleacă pe fază revine prin nul, iar contribuțiile lor se compensează. Dacă o parte revine printr-un traseu exterior conductoarelor monitorizate, apare curentul rezidual. Pentru o reprezentare simplificată:
 
-Analiza privește instalația de locuință descrisă și nu exclude schemele izolate proiectate corespunzător, precum sistemele IT.
+**IΔ = |IL − IN|**
+
+De exemplu, 5 A pe fază și 4,96 A pe nul înseamnă 40 mA întorși pe alt traseu. Este un exemplu numeric, nu o măsurătoare a instalației. Declanșarea depinde de caracteristicile protecției și ale curentului rezidual. Diferențiala nu detectează direct „prezența împământării”; detectează dezechilibrul. [4]
+
+### 2.2. Ieșirea flotantă și primul defect
+
+O sursă poate furniza tensiunea nominală între conductoarele sale fără ca unul dintre ele să aibă o referință intenționată de impedanță redusă față de pământ. La un prim defect între un conductor activ și o carcasă legată la PE, curentul este influențat de impedanțele de izolație și de capacitățile față de pământ. El poate fi insuficient pentru declanșarea protecției diferențiale.
+
+Aceasta nu înseamnă că orice sursă flotantă este interzisă. Sistemele IT sunt proiectate pentru un asemenea regim, cu măsuri specifice de supraveghere a izolației și de tratare a defectelor. O locuință alimentată accidental cu o ieșire flotantă nu trebuie considerată automat o instalație IT proiectată și verificată. [5]
+
+### 2.3. Rolul legăturii N–PE la sursa autonomă
+
+Într-o schemă care prevede referențierea sursei, legătura N–PE contribuie la închiderea buclei de defect. Conceptual, pentru un defect fază–carcasă, traseul este:
+
+**sursă → fază monitorizată → defect → carcasă → PE → legătura la neutru a sursei → sursă.**
+
+Returul prin PE nu traversează nulul monitorizat al circuitului în același mod ca returul normal al sarcinii, permițând apariția dezechilibrului. Legătura aparține schemei sursei, în poziția stabilită față de diferențiale; nu se adaugă arbitrar în prize sau după protecții. Continuitatea PE rămâne necesară. [1, 4]
+
+### 2.4. De ce legătura trebuie coordonată cu alimentarea AC
+
+Într-un invertor/încărcător, referința sursei poate diferi între funcționarea autonomă și alimentarea dintr-o sursă externă. O legătură suplimentară neprevăzută poate crea trasee paralele N–PE, curenți prin conductoarele de protecție și declanșări nedorite. Configurația trebuie analizată pentru fiecare regim, inclusiv bypass. [1]
+
+Ca exemplu de implementare de producător, manualul Victron Quattro-II descrie un releu intern care leagă neutrul ieșirii la carcasă în absența alimentării AC externe. La revenirea acesteia, releul de legare se deschide înaintea închiderii releului de intrare. Este ilustrată astfel coordonarea dintre referința sursei și transferul alimentării. Această funcție documentată la Victron nu dovedește existența sau comportamentul identic al unei funcții în Growatt. [6]
+
+### 2.5. Aplicarea principiului în studiul de caz
+
+În instalația descrisă, contactorul Schneider C2 este destinat legăturii N–PE în regim pe baterie, cu alimentarea AC Growatt deconectată. C1 comandă alimentarea AC, iar C3/C4 aparțin căilor de ieșire și bypass. Asocierea dintre funcții și comenzi este cea declarată de realizator.
+
+| Regim analizat | Aspect care trebuie stabilit prin schemă și verificare |
+|---|---|
+| Alimentare AC Growatt | Originea referinței N–PE și evitarea unei legături suplimentare neprevăzute |
+| Funcționare autonomă | Referința sursei Growatt și traseul de defect prin PE |
+| Bypass AAR | Referința sursei de bypass și separarea circuitelor corespunzătoare |
+| Transfer între regimuri | Pozițiile reale ale contactorilor și coordonarea legăturii N–PE |
+
+Codul analizat urmărește complementaritatea DO1/DO3, însă condiția „DO1 oprit” nu demonstrează fizic absența tensiunii sau izolarea nulului. Scopul declarat al C2 este, așadar, documentat separat de validarea realizării sale. Testarea diferențialelor în fiecare regim și verificarea schemei complete sunt necesare înaintea unei concluzii privind protecția efectivă a casei.
 
 ## 3. Materiale și metodă
 
@@ -91,6 +126,9 @@ Implementarea descrisă separă comanda alimentării AC, conectarea consumatoril
 1. Victron Energy. *Wiring Unlimited*, capitolul 7: [Ground, earth and electrical safety](https://www.victronenergy.com/media/pg/The_Wiring_Unlimited_book/en/ground%2C-earth-and-electrical-safety.html).
 2. ESPHome. [GPIO Switch – Interlocking](https://esphome.io/components/switch/gpio/).
 3. Home Assistant. [ESPHome integration](https://www.home-assistant.io/integrations/esphome/).
+4. Schneider Electric, *Electrical Installation Guide*. [Description of RCDs](https://www.electrical-installation.org/enwiki/Description_of_RCDs).
+5. Schneider Electric, *Electrical Installation Guide*. [IT system – Principle](https://www.electrical-installation.org/enwiki/IT_system_-_Principle).
+6. Victron Energy, *Quattro-II 230V*. [Installation – ground relay](https://www.victronenergy.com/media/pg/Quattro-II_230V/en/installation.html).
 
 ---
 
