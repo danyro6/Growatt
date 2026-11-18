@@ -122,7 +122,7 @@ Semnalizarea reprezintă combinația stărilor software DO1 și DO2. Galbenul es
 
 ### 4.2. Comanda locală prin butonul panoului frontal
 
-Panoul frontal include un organ de comandă conectat la o intrare digitală a controlerului. Conform realizatorului, acționarea acestuia comandă oprirea contactorului C3, asociat ieșirii de tensiune a invertorului Growatt. Interfața locală facilitează intervențiile asupra sistemului fără consultarea dashboard-ului Home Assistant și permite inițierea locală a retragerii căii Growatt în vederea utilizării bypass-ului.
+Panoul frontal include un organ de comandă conectat la intrarea digitală DI2 a controlerului. Conform realizatorului, acționarea acestuia comandă oprirea contactorului C3, asociat ieșirii de tensiune a invertorului Growatt. Interfața locală facilitează intervențiile asupra sistemului fără consultarea dashboard-ului Home Assistant și permite inițierea locală a retragerii căii Growatt în vederea utilizării bypass-ului.
 
 | Element funcțional | Rol în operarea locală |
 |---|---|
@@ -130,7 +130,7 @@ Panoul frontal include un organ de comandă conectat la o intrare digitală a co
 | DO2 / contactor C3 | Comanda conectării sau deconectării ieșirii Growatt |
 | Contactor C4 / ansamblu AAR | Calea de bypass, supusă logicii de transfer și interblocajului C3–C4 |
 
-În configurația ESPHome analizată, DI2 comandă DO2 la apăsare și eliberare, în timp ce DI1 comută DO1 la schimbarea stării. Corespondența fizică exactă dintre butonul frontal și numărul intrării DI nu a fost identificată printr-o schemă de borne. Efectul declarat al butonului este deconectarea comandată a ieșirii Growatt; activarea automată a C4 ca urmare a acestei acțiuni nu a fost confirmată în materialul analizat.
+În configurația ESPHome analizată, DI2 comandă DO2 la apăsare și eliberare, în timp ce DI1 comută DO1 la schimbarea stării. Realizatorul a confirmat conectarea comenzii frontale la DI2. Efectul declarat al butonului este deconectarea comandată a ieșirii Growatt; activarea automată a C4 ca urmare a acestei acțiuni nu a fost confirmată în materialul analizat.
 
 Din perspectiva utilizării, comanda frontală oferă un punct de intervenție accesibil și intuitiv, complementar semnalizării RGB. Totuși, culoarea LED-ului indică stările software DO1/DO2 și nu confirmă poziția contactorului de bypass. Confirmarea că sarcina a fost transferată necesită informații despre starea AAR și despre alimentarea efectivă a consumatorilor.
 
@@ -147,6 +147,28 @@ Comunicarea cu Home Assistant se realizează prin integrarea nativă ESPHome [3]
 | `switch.waveshare_di8_do8_do3_nul_invertor` | Comanda legăturii N–PE |
 
 Aceste entități reprezintă stări logice de comandă. Confirmarea poziției contactorilor necesită reacții fizice distincte. Indisponibilitatea comunicației constituie lipsă de informație și nu este echivalentă cu starea oprit.
+
+### 5.1. Control și telemetrie pe același echipament
+
+Același controler WaveShare este utilizat, conform realizatorului, atât pentru comenzile locale, cât și pentru preluarea datelor Growatt și transmiterea lor către Home Assistant. Instalația reunește astfel funcțiile de achiziție și comandă într-un singur echipament. În această lucrare, WaveShare este identificat ca un controler bazat pe ESP32 cu intrări și ieșiri; utilizarea sa nu implică o clasificare de PLC de siguranță.
+
+Datele actualizate în Home Assistant permit corelarea comenzilor cu parametrii raportați de invertor: tensiuni, puteri, stare de încărcare și celelalte mărimi expuse de configurație. Actualizarea depinde de ciclul de interogare și de comunicație; termenul „live” nu desemnează o măsurare continuă sau un sistem cu timp real garantat. Telemetria invertorului nu înlocuiește reacțiile de poziție ale contactorilor.
+
+### 5.2. Distribuția funcțiilor între ESPHome și Home Assistant
+
+Secvența de interblocare și temporizare este definită în ESPHome și executată pe controler. Comanda unei intrări locale poate fi procesată fără ca fiecare tranziție să parcurgă un traseu intrare–rețea–server Home Assistant–rețea–ieșire. Home Assistant concentrează afișarea, istoricul și comenzile de nivel superior, în timp ce secvența locală păstrează coordonarea ieșirilor pe același dispozitiv.
+
+| Funcție | Rolul atribuit în această implementare |
+|---|---|
+| Buton frontal DI2 și ieșire DO2 | Tratare locală pe WaveShare |
+| Interblocare DO1/DO3 și întârzieri | Execuție locală în ESPHome |
+| Indicator RGB | Evaluare locală a stărilor DO1/DO2 |
+| Date Growatt | Achiziție și expunere prin controler |
+| Dashboard, istoric, supraveghere | Home Assistant |
+
+Avantajul arhitecturii este reducerea dependenței secvenței locale de funcționarea serverului și de schimbul de mesaje pentru fiecare pas. O oprire a Home Assistant nu reprezintă, prin definiție, oprirea unei secvențe locale. Totuși, comportamentul efectiv la lipsa comunicației trebuie verificat împreună cu setările ESPHome: parametrul API `reboot_timeout` poate determina repornirea dispozitivului în absența unui client. Această opțiune și logica de inițializare trebuie analizate împreună. [7]
+
+Concentrarea funcțiilor pe un singur controler introduce și o dependență comună: pierderea alimentării sau defectarea WaveShare poate afecta simultan comanda și telemetria. Execuția locală nu înlocuiește interblocajele hardware, protecțiile electrice sau verificarea circuitelor de putere. Alegerea ESPHome urmărește distribuția funcțiilor din acest studiu, nu o afirmație că orice automatizare Home Assistant ar fi nepotrivită.
 
 ## 6. Rezultatele analizei
 
@@ -172,6 +194,7 @@ Implementarea descrisă separă comanda alimentării AC, conectarea consumatoril
 4. Schneider Electric, *Electrical Installation Guide*. [Description of RCDs](https://www.electrical-installation.org/enwiki/Description_of_RCDs).
 5. Schneider Electric, *Electrical Installation Guide*. [IT system – Principle](https://www.electrical-installation.org/enwiki/IT_system_-_Principle).
 6. Victron Energy, *Quattro-II 230V*. [Installation – ground relay](https://www.victronenergy.com/media/pg/Quattro-II_230V/en/installation.html).
+7. ESPHome. [Native API Component – reboot_timeout](https://esphome.io/components/api/).
 
 ---
 

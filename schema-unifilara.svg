@@ -1,71 +1,86 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1050" viewBox="0 0 1440 1050" role="img" aria-labelledby="title desc">
-<title id="title">Schema unifilară funcțională Growatt UPS</title>
-<desc id="desc">Alimentarea Growatt prin C1, ieșirea prin C3 și bypass-ul prin C4 din aceeași ramură de alimentare, înainte de C1. C1, C3 și C4 comută faza și nulul. C2 realizează legătura N-PE în amonte de diferențiale, conform realizatorului.</desc>
-<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8" fill="none" stroke="#3e5976" stroke-width="1.5"/></marker></defs>
-<rect width="1440" height="1050" fill="#f4f7fb"/>
-<g font-family="Arial, sans-serif" fill="#13243b">
-<text x="60" y="65" font-size="30" font-weight="700">GROWATT UPS · SCHEMĂ UNIFILARĂ FUNCȚIONALĂ</text>
-<text x="60" y="99" font-size="18" fill="#53657b">Ghiulaiu Florin Daniel · versiune 1.0 · 18 noiembrie 2026</text>
-<rect x="60" y="128" width="1320" height="65" rx="8" fill="#fff1cf" stroke="#d6a53a"/>
-<text x="82" y="155" font-size="18" font-weight="700">REPREZENTARE FUNCȚIONALĂ — FĂRĂ BORNARE SAU DIMENSIONARE</text>
-<text x="82" y="179" font-size="16">C1, C3, C4: comutare L + N. Bypass din aceeași ramură AC, în amonte de C1.</text>
-<g fill="#fff" stroke="#9fb1c6" stroke-width="2">
-<rect x="60" y="255" width="205" height="105" rx="10"/>
-<rect x="320" y="255" width="190" height="105" rx="10"/>
-<rect x="565" y="245" width="240" height="125" rx="10"/>
-<rect x="860" y="255" width="190" height="105" rx="10"/>
-
-<rect x="860" y="465" width="190" height="105" rx="10"/>
-<rect x="1160" y="350" width="220" height="120" rx="10"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="1680" height="1188" viewBox="0 0 1680 1188" role="img" aria-labelledby="t d">
+<title id="t">Growatt UPS - schemă unifilară funcțională, revizia 1.1</title>
+<desc id="d">Desen monocrom. Ieșirea DEYE se ramifică înainte de C1: calea C1-Growatt-C3 și calea C4 bypass. C3 și C4 sunt interblocate. C1, C3 și C4 comută L și N. Detaliul separat N-PE prin C2 este înainte de diferențiale. DI2 comandă DO2-C3. Nu este plan de execuție certificat.</desc>
+<rect width="1680" height="1188" fill="white"/>
+<g stroke="#111" fill="none" stroke-width="1.5">
+<rect x="30" y="30" width="1620" height="1128"/><rect x="48" y="48" width="1584" height="1092"/>
+<path d="M48 100H1632 M48 972H1632 M48 1040H1632 M1030 972V1140 M1030 1055H1632 M1030 1098H1632 M1290 1055V1140 M1470 1055V1140"/>
 </g>
-<g font-size="20" text-anchor="middle" font-weight="700">
-<text x="162" y="290">IEȘIRE DEYE</text>
-<text x="415" y="291">C1 · SCHRACK</text>
-<text x="685" y="285">GROWATT</text>
-<text x="955" y="291">C3 · OUT</text>
-
-<text x="955" y="501">C4 · BYPASS</text>
-<text x="1270" y="389">CĂTRE CASĂ</text>
+<g font-family="Arial,sans-serif" fill="#111">
+<text x="75" y="80" font-size="24" font-weight="700">GROWATT UPS — SCHEMĂ UNIFILARĂ FUNCȚIONALĂ</text>
+<text x="1560" y="80" font-size="17" text-anchor="end">Foaia 1 / 1</text>
+<text x="85" y="144" font-size="18" font-weight="700">A. CIRCUITE DE ALIMENTARE ȘI TRANSFER</text>
+<text x="85" y="176" font-size="15">L + N reprezentate unifilar; C1, C3 și C4 comută ambele conductoare.</text>
+<!-- Main circuit -->
+<g stroke="#111" fill="none" stroke-width="2.5">
+<path d="M125 285H430 M485 285H610 M865 285H1045 M1100 285H1380 M1380 285H1550"/>
+<!-- contacts drawn open -->
+<path d="M430 285L485 245 M1045 285L1100 245"/>
+<circle cx="430" cy="285" r="4" fill="white"/><circle cx="485" cy="285" r="4" fill="white"/>
+<circle cx="1045" cy="285" r="4" fill="white"/><circle cx="1100" cy="285" r="4" fill="white"/>
+<!-- Inverter -->
+<rect x="610" y="220" width="255" height="135"/>
+<!-- bypass -->
+<path d="M300 285V525H1045 M1045 525L1100 485 M1100 525H1380V285"/>
+<circle cx="1045" cy="525" r="4" fill="white"/><circle cx="1100" cy="525" r="4" fill="white"/>
+<circle cx="300" cy="285" r="5" fill="#111"/><circle cx="1380" cy="285" r="5" fill="#111"/>
+<!-- source and outgoing terminals -->
+<circle cx="125" cy="285" r="6" fill="white"/><circle cx="1550" cy="285" r="6" fill="white"/>
+<!-- Pole indicators on each switched branch -->
+<path d="M515 277L529 293 M528 277L542 293 M1140 277L1154 293 M1153 277L1167 293 M1140 517L1154 533 M1153 517L1167 533" stroke-width="1.6"/>
+<!-- interlock functional linkage -->
+<path d="M1073 310V476" stroke-dasharray="8 6" stroke-width="1.5"/>
+<path d="M1061 310H1085 M1061 476H1085" stroke-width="1.5"/>
 </g>
-<g font-size="16" text-anchor="middle" fill="#53657b">
-<text x="162" y="322">Alimentare AC Growatt</text>
-<text x="415" y="322">DO1 · comutare L + N</text>
-<text x="685" y="315">AC IN → AC OUT</text>
-<text x="685" y="343">Intrare AC / ieșire AC</text>
-<text x="955" y="322">DO2 · comutare L + N</text>
-
-<text x="955" y="535">AAR · comutare L + N</text>
-<text x="1270" y="420">Diferențiale / distribuție</text>
-<text x="1270" y="445">Caracteristici neprecizate</text>
+<g font-size="17">
+<text x="85" y="238" font-weight="700">IEȘIRE AC DEYE</text>
+<text x="85" y="322">L / N</text>
+<text x="455" y="219" font-weight="700" text-anchor="middle">C1</text>
+<text x="455" y="322" text-anchor="middle">Schrack · 2 poli</text>
+<text x="455" y="347" text-anchor="middle">Comandă DO1</text>
+<text x="737" y="250" font-size="20" font-weight="700" text-anchor="middle">GROWATT UPS</text>
+<text x="737" y="281" text-anchor="middle">AC IN / AC OUT</text>
+<path d="M656 310H819" stroke="#111" stroke-width="1"/>
+<text x="737" y="337" text-anchor="middle">Invertor + stocare</text>
+<text x="1073" y="219" font-weight="700" text-anchor="middle">C3</text>
+<text x="1183" y="325">2 poli · DO2</text>
+<text x="1183" y="350">Ieșire Growatt</text>
+<text x="1073" y="470" font-weight="700" text-anchor="middle">C4</text>
+<text x="1183" y="565">2 poli · AAR</text>
+<text x="1183" y="590">Bypass</text>
+<text x="1330" y="215">CĂTRE DIFERENȚIALE</text>
+<text x="1330" y="239">ȘI CONSUMATORI</text>
+<text x="370" y="488">Derivație bypass în amonte de C1</text>
+<text x="1110" y="402" font-size="16">Interblocaj mecanic</text>
+<text x="1110" y="426" font-size="16">și electric C3–C4*</text>
+<text x="370" y="565" font-size="16">Alimentare comună; bypass-ul ocolește C1 și Growatt.</text>
 </g>
-<g fill="none" stroke="#3e5976" stroke-width="4">
-<path d="M265 307H320 M510 307H565 M805 307H860" marker-end="url(#arrow)"/>
-<path d="M290 307V517H860" stroke="#9762c0" marker-end="url(#arrow)"/>
-<circle cx="290" cy="307" r="6" fill="#9762c0" stroke="none"/>
-<path d="M1050 307H1100V410H1160" marker-end="url(#arrow)"/>
-<path d="M1050 517H1100V410"/>
-
+<path d="M75 630H1600" stroke="#111" stroke-width="1"/>
+<text x="85" y="673" font-size="18" font-weight="700">B. LEGĂTURĂ N–PE — DETALIU FUNCȚIONAL SEPARAT</text>
+<g stroke="#111" fill="none" stroke-width="2.3">
+<path d="M135 760H400 M400 760L452 725 M452 760H640V786 M615 786H665 M622 795H658 M630 804H650"/>
+<circle cx="135" cy="760" r="5" fill="white"/><circle cx="400" cy="760" r="4" fill="white"/><circle cx="452" cy="760" r="4" fill="white"/>
 </g>
-<circle cx="1100" cy="410" r="7" fill="#3e5976"/>
-<path d="M955 365V458" stroke="#9762c0" stroke-width="3" stroke-dasharray="5 5"/>
-<rect x="725" y="389" width="315" height="42" rx="7" fill="#f1e8fa"/>
-<text x="883" y="416" font-size="16" text-anchor="middle" fill="#653e83">C3 ↔ C4 : interblocaj mecanic + electric*</text>
-<text x="325" y="490" font-size="18" fill="#765497">BYPASS: derivație în amonte de C1</text>
-<text x="325" y="553" font-size="17" fill="#53657b">Aceeași sursă AC; ocolirea invertorului Growatt</text>
-<text x="60" y="620" font-size="17" fill="#53657b">Traseu unic = circuit AC (L + N). C3/C4 selectează calea de alimentare către consumatori.</text>
-<rect x="60" y="660" width="1320" height="215" rx="10" fill="#fff" stroke="#9fb1c6" stroke-width="2"/>
-<text x="85" y="698" font-size="22" font-weight="700">TRATAREA NULULUI · C2 SCHNEIDER · COMANDĂ DO3</text>
-<text x="100" y="758" font-size="19" font-weight="700">N ieșire Growatt</text>
-<path d="M305 750H435 M435 750L490 721 M490 750H600" fill="none" stroke="#24876c" stroke-width="4"/>
-<circle cx="435" cy="750" r="4" fill="#24876c"/><circle cx="490" cy="750" r="4" fill="#24876c"/>
-<text x="437" y="795" font-size="17">C2</text>
-<path d="M600 750V772 M580 772H620 M585 780H615 M591 788H609" stroke="#24876c" stroke-width="3" fill="none"/>
-<text x="633" y="758" font-size="19" font-weight="700">PE</text>
-<text x="770" y="744" font-size="18">Închidere declarată în regim autonom</text>
-<text x="770" y="776" font-size="18">În amonte de diferențialele casei</text>
-<text x="85" y="842" font-size="16" fill="#53657b">Detaliu funcțional separat; poziția exactă față de C3/C4 se stabilește în schema de execuție. PE nu este comutat ca sursă.</text>
-<text x="60" y="912" font-size="17">* Interblocaj C3/C4 conform descrierii realizatorului; schema de comandă AAR nu a fost verificată.</text>
-<text x="60" y="945" font-size="17">Nu sunt reprezentate dimensionări, borne, secțiuni sau protecții neconfirmate.</text>
-<path d="M60 975H1380" stroke="#ccd7e5"/>
-<text x="60" y="1013" font-size="17" fill="#53657b">Schemă funcțională pe baza descrierii realizatorului · nu se utilizează ca plan de cablare.</text>
+<text x="85" y="725" font-size="17">N ieșire Growatt</text>
+<text x="425" y="705" font-size="18" font-weight="700" text-anchor="middle">C2</text>
+<text x="425" y="799" font-size="17" text-anchor="middle">Schneider · DO3</text>
+<text x="675" y="766" font-size="18">PE</text>
+<text x="830" y="729" font-size="17">Legătură declarată în regim autonom.</text>
+<text x="830" y="758" font-size="17">Situată înaintea diferențialelor casei.</text>
+<text x="830" y="787" font-size="16">Racordul exact față de C3/C4: de documentat prin bornare.</text>
+<text x="85" y="851" font-size="16">PE rămâne conductor de protecție; nu este reprezentat ca pol de transfer. Simbolurile contactelor nu indică starea actuală.</text>
+<text x="85" y="894" font-size="18" font-weight="700">C. COMANDĂ FRONTALĂ</text>
+<text x="85" y="927" font-size="17">Buton frontal → DI2 / WaveShare → DO2 → C3 (comanda ieșirii Growatt).</text>
+<text x="85" y="1001" font-size="15">* Interblocaj conform descrierii realizatorului; fără verificare funcțională AAR în acest studiu.</text>
+<text x="85" y="1026" font-size="15">Fără borne, calibre, secțiuni sau toate legăturile PE. Nu este plan de cablare / declarație de conformitate.</text>
+<text x="75" y="1075" font-size="18" font-weight="700">Ghiulaiu Florin Daniel</text>
+<text x="75" y="1105" font-size="16">Studiu de caz · tablou Growatt UPS · documentație funcțională</text>
+<text x="1050" y="1001" font-size="16">DOCUMENT: GFD–UPS–UF–001</text>
+<text x="1050" y="1027" font-size="16">SCHEMĂ UNIFILARĂ · TABLOU UPS</text>
+<text x="1050" y="1082" font-size="16">Revizie: 1.1</text>
+<text x="1310" y="1082" font-size="16">Scară: N/A</text>
+<text x="1490" y="1082" font-size="16">A3*</text>
+<text x="1050" y="1125" font-size="15">18.11.2026</text>
+<text x="1310" y="1125" font-size="15">Foaia: 1</text>
+<text x="1490" y="1125" font-size="15">* proporții</text>
 </g></svg>
