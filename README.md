@@ -20,8 +20,6 @@ Scopul este coordonarea unor funcții diferite, fără a le amesteca: alimentare
 
 <p align="center"><img src="tablou-growatt.png" width="560" alt="Tabloul real cu controler WaveShare, relee și contactori" /></p>
 
-*Fotografie furnizată de Ghiulaiu Florin Daniel. Identificarea de mai jos se bazează pe explicațiile realizatorului; fotografia nu permite urmărirea completă a cablajului.*
-
 | Reper documentar | Componentă și poziție | Funcție declarată |
 |---|---|---|
 | C1 | Schrack, jos în stânga | Alimentare AC de intrare Growatt |
