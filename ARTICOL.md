@@ -93,6 +93,21 @@ DO1 și DO3 formează un grup de interblocare software. Pentru DO1 este configur
 
 La inițializare, programul așteaptă 3 s, solicită DO3 activ dacă DO1 este oprit și permite ulterior acționarea DI1. DI1 comută DO1 la schimbarea stării, iar DI2 comandă pornirea și oprirea DO2.
 
+### 4.1. Semnalizarea optică a stării prin LED RGB
+
+LED-ul RGB al controlerului WaveShare oferă un indicator vizual sintetic al comenzilor de alimentare și de conectare a consumatorilor. Codificarea cromatică permite recunoașterea rapidă a stării de la distanță, fără consultarea interfeței Home Assistant, în condiții de vizibilitate corespunzătoare.
+
+| Culoare LED | DO1 – alimentare AC | DO2 – sarcină | Semnificație operațională |
+|---|---|---|---|
+| 🟢 **Verde** | ON | ON | Alimentarea AC și conectarea consumatorilor sunt comandate |
+| 🔵 **Albastru** | ON | OFF | Alimentarea AC este comandată; conectarea consumatorilor nu este comandată |
+| 🟡 **Galben** | OFF | ON | Alimentarea AC nu este comandată; conectarea consumatorilor este comandată |
+| 🔴 **Roșu** | OFF | OFF | Nici alimentarea AC, nici conectarea consumatorilor nu sunt comandate |
+
+În configurația analizată, culoarea este reevaluată local la fiecare secundă, iar luminozitatea este setată la 80%. Indicatorul rămâne astfel legat de logica executată pe controler, fără a necesita deschiderea dashboard-ului pentru interpretare.
+
+Semnalizarea reprezintă combinația stărilor software DO1 și DO2. Galbenul este compatibil cu funcționarea autonomă intenționată, dar nu confirmă singur că invertorul furnizează energie din baterie. Roșul desemnează combinația ambelor comenzi oprite și nu constituie, în această logică, un cod dedicat de avarie. DO3, pozițiile fizice ale contactorilor și starea AAR nu sunt incluse direct în calculul culorii.
+
 ## 5. Integrarea Home Assistant
 
 Comunicarea cu Home Assistant se realizează prin integrarea nativă ESPHome [3]. Controlerul execută secvența locală, iar Home Assistant oferă acces la entitățile de comandă și la informațiile disponibile.
