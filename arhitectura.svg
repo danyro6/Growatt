@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="660" viewBox="0 0 1200 660" role="img" aria-labelledby="title desc">
+<title id="title">Growatt UPS: arhitectură funcțională</title>
+<desc id="desc">Relații conceptuale între WaveShare, Home Assistant și cele patru funcții ale contactorilor. Nu reprezintă cablaj electric.</desc>
+<defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse"><path d="M0,0 L8,4 L0,8" fill="none" stroke="#7c93b8" stroke-width="1.5"/></marker></defs>
+<rect width="1200" height="660" rx="24" fill="#0b1424"/>
+<g font-family="Arial, sans-serif">
+<text x="48" y="57" fill="#edf5ff" font-size="30" font-weight="700">GROWATT UPS</text>
+<text x="48" y="85" fill="#a9bfdb" font-size="16">Automatizare locală · supraveghere · bypass</text>
+<rect x="48" y="120" width="330" height="92" rx="14" fill="#13243b" stroke="#45c9ff"/>
+<text x="70" y="157" fill="#45c9ff" font-size="22" font-weight="700">Home Assistant</text>
+<text x="70" y="187" fill="#d7e5f8" font-size="16">Afișare / stări de comandă / API</text>
+<path d="M213 218 V264" stroke="#7c93b8" stroke-width="3" marker-start="url(#a)" marker-end="url(#a)"/>
+<rect x="48" y="277" width="330" height="159" rx="14" fill="#13243b" stroke="#16dbb5"/>
+<text x="70" y="315" fill="#16dbb5" font-size="22" font-weight="700">WaveShare + ESPHome</text>
+<text x="70" y="347" fill="#d7e5f8" font-size="16">Logică locală DO1 / DO2 / DO3</text>
+<text x="70" y="378" fill="#a9bfdb" font-size="16">Interblocare software DO1–DO3</text>
+<text x="70" y="407" fill="#a9bfdb" font-size="16">Comandă ≠ poziție confirmată</text>
+<path d="M382 313 H448 V169 H493 M448 313 H493 M448 313 V465 H493" stroke="#7c93b8" stroke-width="3" fill="none" marker-end="url(#a)"/>
+<rect x="506" y="120" width="646" height="98" rx="14" fill="#172236" stroke="#ffd04c"/>
+<text x="529" y="157" fill="#ffd04c" font-size="22" font-weight="700">DO1 → C1 · alimentare AC Growatt</text>
+<text x="529" y="188" fill="#d7e5f8" font-size="16">Schrack · intrarea AC poate fi alimentată din DEYE</text>
+<rect x="506" y="263" width="646" height="98" rx="14" fill="#172236" stroke="#16dbb5"/>
+<text x="529" y="300" fill="#16dbb5" font-size="22" font-weight="700">DO3 → C2 · tratare nul</text>
+<text x="529" y="331" fill="#d7e5f8" font-size="16">Schneider · legătură N–PE declarată pentru regim autonom</text>
+<rect x="506" y="409" width="306" height="114" rx="14" fill="#172236" stroke="#45c9ff"/>
+<text x="529" y="448" fill="#45c9ff" font-size="20" font-weight="700">DO2 → C3 · ieșire UPS</text>
+<text x="529" y="481" fill="#d7e5f8" font-size="16">OUT Growatt → consumatori</text>
+<rect x="847" y="409" width="305" height="114" rx="14" fill="#172236" stroke="#b88cff"/>
+<text x="870" y="448" fill="#b88cff" font-size="20" font-weight="700">C4 · bypass AAR</text>
+<text x="870" y="481" fill="#d7e5f8" font-size="16">La avaria invertorului</text>
+<path d="M812 503 H847" stroke="#b88cff" stroke-width="4"/>
+<text x="506" y="554" fill="#c4b0e9" font-size="16">C3 ↔ C4: interblocaj mecanic și electric declarat de realizator</text>
+<path d="M48 585 H1152" stroke="#29405c"/>
+<text x="48" y="615" fill="#a9bfdb" font-size="15">Diagramă funcțională, fără borne sau trasee de putere. Nu este schemă de execuție.</text>
+<text x="48" y="640" fill="#7287a7" font-size="14">Ghiulaiu Florin Daniel · documentație v1.0 · 2026</text>
+</g></svg>

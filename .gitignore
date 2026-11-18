@@ -1,0 +1,16 @@
+# Protection for local Git workflows; not a substitute for secret review.
+secrets.yaml
+**/secrets.yaml
+.env
+.env.*
+*.key
+*.pem
+.storage/
+**/.storage/
+.esphome/
+**/.esphome/
+*.bin
+*.elf
+*.tar
+*.tar.gz
+__pycache__/
