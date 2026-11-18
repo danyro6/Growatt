@@ -1,7 +1,7 @@
-# Coordonarea alimentării și a legăturii neutru–protecție într-un sistem UPS cu invertor Growatt
+# Arhitectură de comandă locală și supraveghere pentru un sistem UPS cu invertor Growatt
 
 **Ghiulaiu Florin Daniel**  
-Studiu de caz tehnic · 18 noiembrie 2026
+Studiu de caz tehnic aplicativ · 18 noiembrie 2026
 
 ![Arhitectura funcțională](arhitectura.svg)
 
@@ -16,6 +16,12 @@ Lucrarea prezintă arhitectura unui sistem de comandă pentru un invertor Growat
 Utilizarea unui invertor cu baterie pentru alimentarea de rezervă a unei locuințe impune coordonarea alimentării AC, a conectării consumatorilor și a regimului conductorului neutru. Continuitatea alimentării și protecția la defect reprezintă obiective distincte: prezența tensiunii la ieșire nu demonstrează, singură, condițiile de funcționare a protecțiilor.
 
 Obiectivul lucrării este descrierea unei implementări locale cu funcții separate de comandă și supraveghere. În instalația analizată, intrarea AC a Growatt poate fi alimentată din sistemul DEYE; absența acestei alimentări nu este considerată automat echivalentă cu absența rețelei publice.
+
+### 1.1. Obiectivul și domeniul studiului
+
+Studiul urmărește integrarea a trei niveluri funcționale: comutația circuitelor de alimentare, execuția locală a comenzilor și supravegherea centralizată. Delimitarea acestor niveluri permite analiza separată a continuității alimentării, a tratării neutrului și a disponibilității informației pentru operator.
+
+Contribuția aplicativă constă în documentarea unei arhitecturi concrete, în care același controler deservește intrările de operare locală, comenzile contactorilor, semnalizarea optică și telemetria invertorului. Lucrarea analizează corespondența dintre intenția funcțională a instalației și comportamentul identificabil în configurația software. Principiile generale ale protecției diferențiale și ale interblocării constituie fundamentul tehnic al analizei, nu revendicări de noutate asupra acestor principii.
 
 ## 2. Fundament teoretic
 
@@ -41,7 +47,7 @@ Aceasta nu înseamnă că orice sursă flotantă este interzisă. Sistemele IT s
 
 Returul prin PE nu traversează nulul monitorizat al circuitului în același mod ca returul normal al sarcinii, permițând apariția dezechilibrului. Legătura aparține schemei sursei, în poziția stabilită față de diferențiale; nu se adaugă arbitrar în prize sau după protecții. Continuitatea PE rămâne necesară. [1, 4]
 
-### 2.4. De ce legătura trebuie coordonată cu alimentarea AC
+### 2.4. Coordonarea referinței N–PE cu alimentarea AC
 
 Într-un invertor/încărcător, referința sursei poate diferi între funcționarea autonomă și alimentarea dintr-o sursă externă. O legătură suplimentară neprevăzută poate crea trasee paralele N–PE, curenți prin conductoarele de protecție și declanșări nedorite. Configurația trebuie analizată pentru fiecare regim, inclusiv bypass. [1]
 
@@ -88,6 +94,14 @@ Conform precizărilor realizatorului, C1, C3 și C4 comută atât faza, cât și
 Legătura N–PE comandată prin C2 este situată înaintea diferențialelor casei, conform realizatorului. Detaliul este reprezentat separat deoarece punctul exact al racordului față de C3/C4 nu a fost documentat printr-o schemă de borne. PE nu este reprezentat ca un conductor comutat între surse.
 
 Schema sintetizează funcțiile declarate. Nu include borne, dimensionări, protecții DC, toate legăturile PE sau logica electrică completă AAR. Nu constituie o schemă de execuție ori confirmarea că referința N–PE este corectă în fiecare regim de transfer.
+
+### 3.2. Metodologia analizei funcționale
+
+Analiza este organizată pe trei categorii de informație. Prima categorie cuprinde elementele observabile în configurația ESPHome: asocierile intrare–ieșire, condițiile de activare, temporizările și semnalizarea. A doua categorie cuprinde topologia declarată de realizator: funcțiile contactorilor, derivația de bypass, comutarea fazei și nulului și poziționarea legăturii N–PE înaintea diferențialelor. A treia categorie privește comportamentul fizic al ansamblului, care necesită verificări instrumentate distincte.
+
+Trasabilitatea este menținută prin utilizarea acelorași repere C1–C4 și DO1–DO3 în text, tabele și schemă. Pentru fiecare funcție sunt diferențiate semnalul de intrare, comanda emisă și efectul fizic intenționat. Această metodă evită echivalarea unei stări software cu poziția efectivă a unui contact sau cu prezența tensiunii într-un circuit.
+
+Interpretarea documentației producătorilor este utilizată pentru explicarea principiilor. Aplicarea acestora la instalația analizată este raportată la configurația disponibilă, fără extrapolarea automată a caracteristicilor unui echipament asupra altui model.
 
 ## 4. Arhitectura de comandă
 
@@ -176,6 +190,19 @@ Analiza fișierului confirmă existența separării DO1–DO3, a interblocării 
 
 În consecință, configurația demonstrează coordonarea comenzilor, dar nu demonstrează izolarea fizică a sursei. Timpii configurați nu reprezintă măsurători ale deschiderii contactelor sau timpi certificați de transfer UPS. Funcționarea AAR și interblocajul C3–C4 sunt descrise pe baza informațiilor realizatorului, fără test funcțional inclus în studiu.
 
+### 6.1. Sinteza funcțională a arhitecturii
+
+| Nivel analizat | Rezultat al examinării | Semnificație tehnică |
+|---|---|---|
+| Alimentare | Două căi din aceeași ramură AC, cu derivație înainte de C1 | Bypass-ul ocolește C1 și Growatt, fără independență energetică față de sursa comună |
+| Comandă | Funcții distincte pentru DO1, DO2 și DO3 | Separarea alimentării, a conectării consumatorilor și a tratării nulului |
+| Operare locală | Buton frontal confirmat pe DI2, asociat DO2 | Posibilitatea retragerii comandate a ieșirii Growatt fără accesarea dashboard-ului |
+| Semnalizare | Cod RGB derivat din DO1 și DO2 | Identificarea vizuală a combinației comenzilor |
+| Supraveghere | Telemetrie și comenzi expuse prin același controler | Corelarea datelor invertorului cu stările de comandă în Home Assistant |
+| Disponibilitate | Execuție locală, cu resurse hardware comune | Reducerea dependenței secvenței de server, concomitent cu existența unui punct comun de defectare |
+
+Rezultatele susțin caracterizarea arhitecturii ca sistem de comandă locală cu supraveghere centralizată. Ele nu constituie măsurători de performanță ale protecțiilor sau ale transferului de putere.
+
 ## 7. Discuție și limite
 
 Interblocarea software facilitează exclusivitatea logică a comenzilor, însă nu înlocuiește măsurile hardware. Documentația ESPHome evidențiază limitele acestei funcții în prezența erorilor software și în timpul resetării [2]. Interblocajul C3–C4 nu constituie dovada unui interblocaj fizic între C1 și C2.
@@ -184,7 +211,7 @@ Validarea electrică necesită schema completă L/N/PE, regimul de împământar
 
 ## 8. Concluzii
 
-Implementarea descrisă separă comanda alimentării AC, conectarea consumatorilor și tratarea nulului într-o arhitectură locală integrată în Home Assistant. Contribuția studiului constă în descrierea structurată a unei instalații personale și în analiza relației dintre comenzile logice și funcțiile fizice intenționate. Confirmarea eficacității protecțiilor și a comportamentului în avarie rămâne condiționată de verificarea electrică și de documentarea experimentală.
+Implementarea descrisă separă comanda alimentării AC, conectarea consumatorilor și tratarea nulului într-o arhitectură locală integrată în Home Assistant. Arhitectura reunește operarea frontală, semnalizarea optică și telemetria într-un controler comun, cu separarea rolului de comandă față de rolul de supraveghere. Contribuția studiului constă în documentarea acestei implementări și în analiza relației dintre comenzile logice și funcțiile fizice intenționate. Confirmarea eficacității protecțiilor și a comportamentului în avarie rămâne condiționată de verificarea electrică și de documentarea experimentală.
 
 ## Referințe
 
