@@ -3,6 +3,8 @@
 **Ghiulaiu Florin Daniel**  
 Studiu de caz tehnic · 18 noiembrie 2026
 
+![Arhitectura funcțională](arhitectura.svg)
+
 ## Rezumat
 
 Lucrarea prezintă arhitectura unui sistem de comandă pentru un invertor Growatt utilizat ca sursă neîntreruptibilă cu stocare. Implementarea folosește un controler WaveShare ESP32-S3-POE-ETH-8DI-8DO, platforma ESPHome și integrarea Home Assistant. Trei ieșiri comandă alimentarea AC, conectarea consumatorilor și contactorul destinat legăturii dintre conductorul neutru și conductorul de protecție în regim autonom. O pereche de contactori cu interblocaj mecanic și electric, conform configurației declarate a instalației, asigură funcția de transfer către bypass. Analiza configurației evidențiază separarea funcțiilor și temporizarea comenzilor, precum și diferența dintre starea logică a unei ieșiri și starea fizică a circuitului de putere. Studiul are caracter descriptiv; eficacitatea protecțiilor și performanțele transferului nu au fost evaluate prin măsurători în cadrul lucrării.
@@ -39,10 +41,6 @@ Metoda constă în analiza configurației ESPHome, identificarea entităților H
 | C4 | Contactorul mare din extrema dreaptă | Alimentarea prin bypass în ansamblul AAR |
 
 Reperele C1–C4 sunt utilizate în lucrare pentru identificarea funcțională. Perechea C3–C4 este descrisă ca având interblocaj mecanic și electric. Schema completă a AAR nu a făcut parte din materialul analizat.
-
-![Arhitectura funcțională](arhitectura.svg)
-
-**Figura 2.** Arhitectura funcțională a sistemului; reprezentarea nu constituie schemă de cablare.
 
 ## 4. Arhitectura de comandă
 
