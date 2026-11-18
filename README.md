@@ -120,6 +120,22 @@ LED-ul RGB al controlerului WaveShare oferă un indicator vizual sintetic al com
 
 Semnalizarea reprezintă combinația stărilor software DO1 și DO2. Galbenul este compatibil cu funcționarea autonomă intenționată, dar nu confirmă singur că invertorul furnizează energie din baterie. Roșul desemnează combinația ambelor comenzi oprite și nu constituie, în această logică, un cod dedicat de avarie. DO3, pozițiile fizice ale contactorilor și starea AAR nu sunt incluse direct în calculul culorii.
 
+### 4.2. Comanda locală prin butonul panoului frontal
+
+Panoul frontal include un organ de comandă conectat la o intrare digitală a controlerului. Conform realizatorului, acționarea acestuia comandă oprirea contactorului C3, asociat ieșirii de tensiune a invertorului Growatt. Interfața locală facilitează intervențiile asupra sistemului fără consultarea dashboard-ului Home Assistant și permite inițierea locală a retragerii căii Growatt în vederea utilizării bypass-ului.
+
+| Element funcțional | Rol în operarea locală |
+|---|---|
+| Buton frontal / intrare DI | Introducerea comenzii locale |
+| DO2 / contactor C3 | Comanda conectării sau deconectării ieșirii Growatt |
+| Contactor C4 / ansamblu AAR | Calea de bypass, supusă logicii de transfer și interblocajului C3–C4 |
+
+În configurația ESPHome analizată, DI2 comandă DO2 la apăsare și eliberare, în timp ce DI1 comută DO1 la schimbarea stării. Corespondența fizică exactă dintre butonul frontal și numărul intrării DI nu a fost identificată printr-o schemă de borne. Efectul declarat al butonului este deconectarea comandată a ieșirii Growatt; activarea automată a C4 ca urmare a acestei acțiuni nu a fost confirmată în materialul analizat.
+
+Din perspectiva utilizării, comanda frontală oferă un punct de intervenție accesibil și intuitiv, complementar semnalizării RGB. Totuși, culoarea LED-ului indică stările software DO1/DO2 și nu confirmă poziția contactorului de bypass. Confirmarea că sarcina a fost transferată necesită informații despre starea AAR și despre alimentarea efectivă a consumatorilor.
+
+Pentru mentenanță, oprirea C3 reprezintă retragerea comandată a căii de ieșire, nu izolarea completă a invertorului. Alimentările AC, bateria și eventualele circuite fotovoltaice rămân surse distincte de energie. Butonul nu este prezentat ca separator de siguranță sau ca substitut al izolării și verificării absenței tensiunii înaintea intervenției.
+
 ## 5. Integrarea Home Assistant
 
 Comunicarea cu Home Assistant se realizează prin integrarea nativă ESPHome [3]. Controlerul execută secvența locală, iar Home Assistant oferă acces la entitățile de comandă și la informațiile disponibile.
