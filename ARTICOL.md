@@ -77,6 +77,18 @@ Metoda constă în analiza configurației ESPHome, identificarea entităților H
 
 Reperele C1–C4 sunt utilizate în lucrare pentru identificarea funcțională. Perechea C3–C4 este descrisă ca având interblocaj mecanic și electric. Schema completă a AAR nu a făcut parte din materialul analizat.
 
+### 3.1. Schema unifilară funcțională a tabloului
+
+![Schema unifilară funcțională a tabloului Growatt UPS](schema-unifilara.svg)
+
+**Figura 3.** Reprezentarea unifilară a căilor de alimentare și detaliul funcțional al legăturii N–PE.
+
+Conform precizărilor realizatorului, C1, C3 și C4 comută atât faza, cât și nulul. Alimentarea principală a Growatt provine din ieșirea DEYE, prin C1. Ieșirea Growatt este conectată către consumatori prin C3. C4 este alimentat din aceeași ramură AC ca intrarea C1, printr-o derivație în amonte de acest contactor. Bypass-ul ocolește astfel C1 și invertorul Growatt; nu reprezintă o sursă energetică independentă și nu elimină dependența de alimentarea comună din amonte. C3 și C4 aparțin ansamblului AAR cu interblocaj mecanic și electric declarat.
+
+Legătura N–PE comandată prin C2 este situată înaintea diferențialelor casei, conform realizatorului. Detaliul este reprezentat separat deoarece punctul exact al racordului față de C3/C4 nu a fost documentat printr-o schemă de borne. PE nu este reprezentat ca un conductor comutat între surse.
+
+Schema sintetizează funcțiile declarate. Nu include borne, dimensionări, protecții DC, toate legăturile PE sau logica electrică completă AAR. Nu constituie o schemă de execuție ori confirmarea că referința N–PE este corectă în fiecare regim de transfer.
+
 ## 4. Arhitectura de comandă
 
 Cele trei ieșiri ESPHome sunt asociate unor funcții distincte:
