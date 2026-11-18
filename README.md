@@ -1,68 +1,99 @@
-# Growatt UPS · automatizare locală și tratarea nulului
+# Coordonarea alimentării și a legăturii neutru–protecție într-un sistem UPS cu invertor Growatt
 
-### Proiect realizat de Ghiulaiu Florin Daniel
+**Ghiulaiu Florin Daniel**  
+Studiu de caz tehnic · 18 noiembrie 2026
 
-**WaveShare ESP32-S3 · ESPHome · Home Assistant · contactori · bypass AAR**
+## Rezumat
 
-Acest proiect documentează o instalație personală în care un invertor Growatt este folosit ca UPS cu stocare. Trei ieșiri ale controlerului comandă alimentarea AC, conectarea consumatorilor și contactorul pentru tratarea nulului. Un ansamblu separat de contactori interblocați permite bypass-ul în cazul avariei invertorului.
+Lucrarea prezintă arhitectura unui sistem de comandă pentru un invertor Growatt utilizat ca sursă neîntreruptibilă cu stocare. Implementarea folosește un controler WaveShare ESP32-S3-POE-ETH-8DI-8DO, platforma ESPHome și integrarea Home Assistant. Trei ieșiri comandă alimentarea AC, conectarea consumatorilor și contactorul destinat legăturii dintre conductorul neutru și conductorul de protecție în regim autonom. O pereche de contactori cu interblocaj mecanic și electric, conform configurației declarate a instalației, asigură funcția de transfer către bypass. Analiza configurației evidențiază separarea funcțiilor și temporizarea comenzilor, precum și diferența dintre starea logică a unei ieșiri și starea fizică a circuitului de putere. Studiul are caracter descriptiv; eficacitatea protecțiilor și performanțele transferului nu au fost evaluate prin măsurători în cadrul lucrării.
 
-> **Statut: studiu de caz tehnic, versiunea 1.0.** Documentația descrie configurația citită și informațiile furnizate de realizator. Nu este o schemă de execuție, o certificare de siguranță sau o soluție universală pentru orice invertor și orice instalație.
+**Cuvinte-cheie:** UPS; Growatt; ESPHome; Home Assistant; neutru; N–PE; protecție diferențială; interblocare; AAR.
 
-![Arhitectura funcțională a proiectului](arhitectura.svg)
+## 1. Introducere
 
-## De ce acest proiect?
+Utilizarea unui invertor cu baterie pentru alimentarea de rezervă a unei locuințe impune coordonarea alimentării AC, a conectării consumatorilor și a regimului conductorului neutru. Continuitatea alimentării și protecția la defect reprezintă obiective distincte: prezența tensiunii la ieșire nu demonstrează, singură, condițiile de funcționare a protecțiilor.
 
-Scopul este coordonarea unor funcții diferite, fără a le amesteca: alimentarea invertorului, livrarea energiei către consumatori și comanda legăturii N–PE în regim autonom. ESPHome execută logica locală, iar Home Assistant oferă vizibilitate asupra comenzilor și a datelor disponibile.
+Obiectivul lucrării este descrierea unei implementări locale cu funcții separate de comandă și supraveghere. În instalația analizată, intrarea AC a Growatt poate fi alimentată din sistemul DEYE; absența acestei alimentări nu este considerată automat echivalentă cu absența rețelei publice.
 
-În instalația descrisă, alimentarea AC a Growatt poate proveni din sistemul DEYE. Prin urmare, „rețea” din denumirea DO1 înseamnă aici **alimentarea AC de intrare a Growatt**; nu dovedește că rețeaua publică este prezentă.
+## 2. Fundament teoretic
 
-## Fotografia instalației
+Protecția diferențială detectează curentul rezidual rezultat din dezechilibrul curenților care traversează conductoarele active monitorizate. Într-o sursă flotantă, primul defect față de pământ poate produce un curent insuficient pentru declanșarea anticipată într-o instalație cu sursă referențiată.
 
-<p align="center"><img src="tablou-growatt.png" width="560" alt="Tabloul real cu controler WaveShare, relee și contactori" /></p>
+În schemele care prevăd această măsură, legătura N–PE la sursă contribuie la stabilirea traseului curentului de defect prin conductorul de protecție. Poziția legăturii față de dispozitivele diferențiale și coordonarea sa cu sursele alternative sunt esențiale. Continuitatea PE și alegerea protecțiilor rămân necesare independent de comanda acestei legături. Referința [1] prezintă principiul pentru invertoare și invertoare/încărcătoare; aplicabilitatea la modelul Growatt utilizat necesită verificarea documentației sale specifice.
 
-| Reper documentar | Componentă și poziție | Funcție declarată |
+Analiza privește instalația de locuință descrisă și nu exclude schemele izolate proiectate corespunzător, precum sistemele IT.
+
+## 3. Materiale și metodă
+
+Metoda constă în analiza configurației ESPHome, identificarea entităților Home Assistant și corelarea acestora cu fotografia și descrierea funcțională a tabloului. Fișierul analizat este `gorwatt-cu-stari-si-automatizar.yaml`; identitatea sa cu firmware-ul instalat nu a fost verificată printr-un identificator de build.
+
+<p align="center"><img src="tablou-growatt.png" width="560" alt="Tabloul sistemului Growatt UPS" /></p>
+
+**Figura 1.** Tabloul de comandă și comutație al instalației.
+
+| Reper | Componentă | Funcție |
 |---|---|---|
-| C1 | Schrack, jos în stânga | Alimentare AC de intrare Growatt |
-| C2 | Schneider, central | Închiderea legăturii N–PE în regim autonom |
-| C3 | Primul contactor mare la dreapta Schneiderului | Conectarea ieșirii OUT Growatt către consumatori |
-| C4 | Contactorul mare din extrema dreaptă | Calea de bypass prin AAR |
+| C1 | Contactor Schrack, jos în stânga | Alimentarea AC a invertorului Growatt |
+| C2 | Contactor Schneider, central | Comanda legăturii N–PE în regim autonom |
+| C3 | Primul contactor mare din dreapta | Conectarea ieșirii Growatt către consumatori |
+| C4 | Contactorul mare din extrema dreaptă | Alimentarea prin bypass în ansamblul AAR |
 
-**C1–C4 sunt repere ale documentației**, nu etichete pretins existente pe aparate. Conform realizatorului, C3 și C4 au interblocaj mecanic și electric. Modelele exacte, numărul polilor utilizați și conexiunile bornelor nu sunt certificate prin această fotografie.
+Reperele C1–C4 sunt utilizate în lucrare pentru identificarea funcțională. Perechea C3–C4 este descrisă ca având interblocaj mecanic și electric. Schema completă a AAR nu a făcut parte din materialul analizat.
 
-## Citește documentația
+![Arhitectura funcțională](arhitectura.svg)
 
-| Document | Ce conține |
+**Figura 2.** Arhitectura funcțională a sistemului; reprezentarea nu constituie schemă de cablare.
+
+## 4. Arhitectura de comandă
+
+Cele trei ieșiri ESPHome sunt asociate unor funcții distincte:
+
+| Ieșire | Denumire în configurație | Element comandat |
+|---|---|---|
+| DO1 | `DO1 Retea` | C1 – alimentare AC |
+| DO2 | `DO2 Sarcina` | C3 – conectarea consumatorilor |
+| DO3 | `DO3 Nul Invertor` | C2 – legătură N–PE |
+
+Această separare permite coordonarea alimentării, a sarcinii și a referinței neutru–protecție. Funcția de bypass introduce al patrulea contactor, C4, distinct de cele trei elemente asociate direct ieșirilor DO1–DO3.
+
+DO1 și DO3 formează un grup de interblocare software. Pentru DO1 este configurat `interlock_wait_time: 1s`, iar pentru DO3, `interlock_wait_time: 2s`. La oprirea DO1, o secvență așteaptă 2 s și verifică dacă DO1 este încă oprit înainte de a solicita activarea DO3.
+
+La inițializare, programul așteaptă 3 s, solicită DO3 activ dacă DO1 este oprit și permite ulterior acționarea DI1. DI1 comută DO1 la schimbarea stării, iar DI2 comandă pornirea și oprirea DO2.
+
+## 5. Integrarea Home Assistant
+
+Comunicarea cu Home Assistant se realizează prin integrarea nativă ESPHome [3]. Controlerul execută secvența locală, iar Home Assistant oferă acces la entitățile de comandă și la informațiile disponibile.
+
+| Entitate | Mărime reprezentată |
 |---|---|
-| [Articolul tehnic](ARTICOL.md) | Motivație, diferențiale, nul flotant și rolul contactorilor |
-| [Logica ESPHome](AUTOMATIZARE.md) | Ce face efectiv codul, întârzieri, repornire și limite |
-| [Integrarea Home Assistant](HOME_ASSISTANT.md) | Conectare, entități și un exemplu de afișare fără comenzi |
-| [Validare și scenarii de defect](VALIDARE.md) | Ce trebuie măsurat și ce nu este încă demonstrat |
-| [Surse și atribuiri](SURSE.md) | Documentație oficială și delimitarea contribuțiilor |
-| [Ghid pentru întreținerea paginii](GHID_GITHUB.md) | Editare, încărcare fotografii și versiuni |
+| `switch.waveshare_di8_do8_do1_retea` | Comanda alimentării AC |
+| `switch.waveshare_di8_do8_do2_sarcina` | Comanda conectării consumatorilor |
+| `switch.waveshare_di8_do8_do3_nul_invertor` | Comanda legăturii N–PE |
 
-## Trei relee de comandă, patru contactori
+Aceste entități reprezintă stări logice de comandă. Confirmarea poziției contactorilor necesită reacții fizice distincte. Indisponibilitatea comunicației constituie lipsă de informație și nu este echivalentă cu starea oprit.
 
-| Ieșire ESPHome | Nume în configurația citită | Rol asociat |
-|---|---|---|
-| DO1 | `DO1 Retea` | Comanda C1 – alimentare AC |
-| DO2 | `DO2 Sarcina` | Comanda C3 – ieșire către consumatori |
-| DO3 | `DO3 Nul Invertor` | Comanda C2 – legătură N–PE |
-| AAR separat | Nu este demonstrat în extrasul ESPHome | Comanda transferului/bypass-ului C3–C4 |
+## 6. Rezultatele analizei
 
-Nu sunt patru funcții comprimate în trei contactori. Calea de bypass introduce un al patrulea contactor, distinct de cele trei funcții comandate prin DO1–DO3.
+Analiza fișierului confirmă existența separării DO1–DO3, a interblocării software și a temporizărilor configurate. Activarea DO3 este condiționată de starea logică DO1, fără o verificare explicită a absenței tensiunii AC sau a poziției C1 în secvența examinată.
 
-## Ce este demonstrat și ce rămâne de verificat
+În consecință, configurația demonstrează coordonarea comenzilor, dar nu demonstrează izolarea fizică a sursei. Timpii configurați nu reprezintă măsurători ale deschiderii contactelor sau timpi certificați de transfer UPS. Funcționarea AAR și interblocajul C3–C4 sunt descrise pe baza informațiilor realizatorului, fără test funcțional inclus în studiu.
 
-- **Citit în fișier:** interblocarea software DO1/DO3, temporizări, intrări DI1/DI2 și inițializarea la pornire.
-- **Descris de realizator:** rolurile fizice C1–C4 și interblocajul mecanic/electric C3–C4.
-- **Nedemonstrat:** poziția reală a contactelor, schema completă N/PE, funcționarea diferențialelor în fiecare regim și timpii reali de transfer.
+## 7. Discuție și limite
 
-Starea `ON` a unui switch este o **stare de comandă**. Fără contacte auxiliare și măsurători corespunzătoare, nu constituie confirmarea poziției contactorului sau a absenței tensiunii.
+Interblocarea software facilitează exclusivitatea logică a comenzilor, însă nu înlocuiește măsurile hardware. Documentația ESPHome evidențiază limitele acestei funcții în prezența erorilor software și în timpul resetării [2]. Interblocajul C3–C4 nu constituie dovada unui interblocaj fizic între C1 și C2.
 
-## Drepturi și utilizare
+Validarea electrică necesită schema completă L/N/PE, regimul de împământare, caracteristicile invertorului și protecțiilor, precum și verificări în regim AC, autonom și bypass. Nu sunt disponibile în cadrul lucrării rezultate de continuitate PE, teste instrumentate ale diferențialelor, măsurători ale buclei de defect sau înregistrări ale transferului. Prin urmare, nu se formulează o concluzie de conformitate sau certificare a instalației.
 
-**© 2026 Ghiulaiu Florin Daniel. Toate drepturile rezervate pentru contribuțiile originale asupra cărora autorul deține drepturi.**
+## 8. Concluzii
 
-Repository public pentru prezentare și documentare; nu este oferit sub o licență open-source. Se păstrează drepturile legale ale terților și permisiunile prevăzute de termenii GitHub, inclusiv vizualizarea și fork-ul în cadrul platformei. Vezi [LICENSE](LICENSE) și [NOTICE.md](NOTICE.md).
+Implementarea descrisă separă comanda alimentării AC, conectarea consumatorilor și tratarea nulului într-o arhitectură locală integrată în Home Assistant. Contribuția studiului constă în descrierea structurată a unei instalații personale și în analiza relației dintre comenzile logice și funcțiile fizice intenționate. Confirmarea eficacității protecțiilor și a comportamentului în avarie rămâne condiționată de verificarea electrică și de documentarea experimentală.
 
-Publicarea aici nu este înregistrare de brevet și nu conferă exclusivitate asupra principiului electric. Nu se revendică inventarea tratării nulului, a interblocărilor, a ESPHome sau a Home Assistant.
+## Referințe
+
+1. Victron Energy. *Wiring Unlimited*, capitolul 7: [Ground, earth and electrical safety](https://www.victronenergy.com/media/pg/The_Wiring_Unlimited_book/en/ground%2C-earth-and-electrical-safety.html).
+2. ESPHome. [GPIO Switch – Interlocking](https://esphome.io/components/switch/gpio/).
+3. Home Assistant. [ESPHome integration](https://www.home-assistant.io/integrations/esphome/).
+
+---
+
+© 2026 Ghiulaiu Florin Daniel. Toate drepturile rezervate pentru contribuțiile originale asupra cărora autorul deține drepturi. Drepturile terților și termenii GitHub rămân aplicabili. [Condiții de utilizare](LICENSE).
